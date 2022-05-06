@@ -3,8 +3,8 @@ class NginxFull < Formula
   homepage "https://nginx.org/"
   # Use "mainline" releases only (odd minor version number), not "stable"
   # See https://www.nginx.com/blog/nginx-1-12-1-13-released/ for why
-  url "https://nginx.org/download/nginx-1.19.10.tar.gz"
-  sha256 "e8d0290ff561986ad7cd6c33307e12e11b137186c4403a6a5ccdb4914c082d88"
+  url "https://nginx.org/download/nginx-1.21.6.tar.gz"
+  sha256 "66dc7081488811e9f925719e34d1b4504c2801c81dee2920e5452a86b11405ae"
   head "http://hg.nginx.org/nginx/", using: :hg
 
   option "with-homebrew-libressl", "Include LibreSSL instead of OpenSSL via Homebrew"
@@ -17,7 +17,7 @@ class NginxFull < Formula
   depends_on "libxslt" if build.with?("xsltproc-module") ||
                           build.with?("xslt")
   depends_on "libzip" if build.with?("unzip")
-  depends_on "pcre"
+  depends_on "pcre2"
   depends_on "valgrind" if build.with?("no-pool-nginx")
   depends_on "gd" => :optional
   depends_on "geoip" => :optional
@@ -222,9 +222,9 @@ class NginxFull < Formula
       s.gsub! "    #}\n\n}", "    #}\n    include servers/*;\n}"
     end
 
-    pcre = Formula["pcre"]
-    cc_opt = "-I#{HOMEBREW_PREFIX}/include -I#{pcre.include}"
-    ld_opt = "-L#{HOMEBREW_PREFIX}/lib -L#{pcre.lib}"
+    pcre2 = Formula["pcre2"]
+    cc_opt = "-I#{HOMEBREW_PREFIX}/include -I#{pcre2.include}"
+    ld_opt = "-L#{HOMEBREW_PREFIX}/lib -L#{pcre2.lib}"
 
     if build.with?("libressl")
       cc_opt += " -I#{Formula["libressl"].include}"
@@ -232,6 +232,11 @@ class NginxFull < Formula
     else
       cc_opt += " -I#{Formula["openssl@1.1"].include}"
       ld_opt += " -L#{Formula["openssl@1.1"].lib}"
+    end
+
+    if build.with?("brotli-module")
+      cc_opt += " -I#{Formula["brotli"].include}"
+      ld_opt += " -L#{Formula["brotli"].lib}"
     end
 
     if build.with?("xsltproc-module")
