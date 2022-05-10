@@ -2,7 +2,7 @@ class NjsNginxModule < Formula
   desc "Adds support for njs scripting to nginx"
   homepage "https://github.com/nginx/njs"
   url "https://github.com/nginx/njs/archive/0.7.3.tar.gz"
-  sha256 "a1481be96989842ed05d06eab4ae4e79790c552196e5624dd38d42bc2d275829"
+  sha256 "a212ed7d4c9f8d6da0fed651ac1e2399a7d92e3f32000e2c2684364d52ee7880"
   head "https://github.com/nginx/njs.git", branch: "master"
 
   depends_on "pcre2" => :build
