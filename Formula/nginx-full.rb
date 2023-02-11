@@ -4,7 +4,7 @@ class NginxFull < Formula
   # Use "mainline" releases only (odd minor version number), not "stable"
   # See https://www.nginx.com/blog/nginx-1-12-1-13-released/ for why
   url "https://nginx.org/download/nginx-1.23.3.tar.gz"
-  sha256 "92cc425d0b0952bb7e2e7a396cba58feb4a90fb3cb63441c201ab4d3e0cd6403"
+  sha256 "fa69ce6819f172c34338dc23ba5126ac986caf4652c7c01ea02bcef93d558cc4"
   head "http://hg.nginx.org/nginx/", using: :hg
 
   option "with-homebrew-libressl", "Include LibreSSL instead of OpenSSL via Homebrew"
