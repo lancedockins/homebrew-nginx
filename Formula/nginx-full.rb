@@ -5,6 +5,7 @@ class NginxFull < Formula
   # See https://www.nginx.com/blog/nginx-1-12-1-13-released/ for why
   url "https://nginx.org/download/nginx-1.23.3.tar.gz"
   sha256 "92cc425d0b0952bb7e2e7a396cba58feb4a90fb3cb63441c201ab4d3e0cd6403"
+  license "BSD-2-Clause"
   head "http://hg.nginx.org/nginx/", using: :hg
 
   option "with-homebrew-libressl", "Include LibreSSL instead of OpenSSL via Homebrew"
@@ -296,11 +297,11 @@ class NginxFull < Formula
       args << "--add-module=#{nginx_ext}"
     end
 
-    # Install LuaJit
+    # Install lua-module with luajit
     if build.with?("lua-module")
-      luajit_path = `/usr/local/bin/brew --prefix luajit`.chomp
-      ENV["LUAJIT_LIB"] = "#{luajit_path}/lib"
-      ENV["LUAJIT_INC"] = "#{luajit_path}/include/luajit-2.0"
+      luajit_version = Formula["luajit"].pkg_version.to_s.sub(/^(\d+\.\d+).*/, '\1')
+      ENV["LUAJIT_INC"] = "#{Formula["luajit"].opt_include}/luajit-#{luajit_version}"
+      ENV["LUAJIT_LIB"] = "#{Formula["luajit"].opt_lib}"
     end
 
     if build.head?
@@ -380,29 +381,13 @@ class NginxFull < Formula
 
   plist_options manual: "nginx"
 
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-        <dict>
-          <key>Label</key>
-          <string>#{plist_name}</string>
-          <key>RunAtLoad</key>
-          <true/>
-          <key>KeepAlive</key>
-          <false/>
-          <key>ProgramArguments</key>
-          <array>
-              <string>#{opt_bin}/nginx</string>
-              <string>-g</string>
-              <string>daemon off;</string>
-          </array>
-          <key>WorkingDirectory</key>
-          <string>#{HOMEBREW_PREFIX}</string>
-        </dict>
-      </plist>
-    EOS
+  service do
+    run [opt_bin/"nginx", "-g", "daemon off;"]
+    working_dir HOMEBREW_PREFIX
+    keep_alive true
+    require_root true
+    log_path var/"log/nginx.log"
+    error_log_path var/"log/nginx-error.log"
   end
 
   test do
